@@ -1,0 +1,11 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  frequency: 1
+  ja_note_name: MyString
+  en_note_name: MyString
+
+two:
+  frequency: 1
+  ja_note_name: MyString
+  en_note_name: MyString
