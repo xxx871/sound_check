@@ -1,8 +1,16 @@
-
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "./components/elements/Select/Select";
 import { Button } from "./components/elements/Button/Button";
+import axios from 'axios';
+import { SelectComponent } from "./components/elements/Select/Select";
 
-export default function Home() {
+const axiosInstance = axios.create({
+  baseURL: `http://host.docker.internal:3000/api/v1/`,
+});
+
+export default async function Home() {
+  const res = await axiosInstance.get("modes");
+  const modes = res.data;
+  console.log("modes", modes);
+
   return (
     <main className="text-white">
       <div>
@@ -11,16 +19,7 @@ export default function Home() {
         </h1>
       </div>
       <div className="mt-16 w-72 mx-auto text-2xl font-palettemosaic text-slate-300">
-        <Select>
-          <SelectTrigger className="w-288px]">
-            <SelectValue placeholder="モードせんたく"/>
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="light">つうじょうモード</SelectItem>
-            <SelectItem value="dark">れんしゅうモード</SelectItem>
-            <SelectItem value="system">ハモりモード</SelectItem>
-          </SelectContent>
-        </Select>
+        <SelectComponent modes={modes} />
       </div>
       <div className="mt-16 w-16 mx-auto font-palettemosaic mb-24">
         <Button variant="outline">START</Button>
