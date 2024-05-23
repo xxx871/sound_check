@@ -1,18 +1,14 @@
 'use client';
 
 import { SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Mode } from "@/types/mode";
+import { SelectComponentProps } from "@/types/mode";
 import * as SelectPrimitive from "@radix-ui/react-select"
-
-export interface SelectComponentProps {
-  modes: Mode[];
-}
 
 const Select = SelectPrimitive.Root
 
-export function SelectComponent({ modes }: SelectComponentProps) {
+export function SelectComponent({ modes, onSelect }: SelectComponentProps) {
   return (
-    <Select>
+    <Select onValueChange={onSelect}>
       <SelectTrigger className="w-288px">
         <SelectValue placeholder="モードせんたく" />
       </SelectTrigger>
