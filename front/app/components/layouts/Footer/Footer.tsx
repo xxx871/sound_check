@@ -3,9 +3,9 @@ import React from 'react'
 
 const Footer = () => {
   return (
-    <div className="text-white h-6 border-gray-200 border-t dark:border-gray-800">
+    <footer className="bg-white fixed bottom-0 w-full text-white border-gray-200 border-t dark:border-gray-800">
       <div className="items-center bg-blue-900 text-center">
-        <nav className="space-x-40">
+        <nav className="space-x-40 text-lg">
           <Link href="/terms" className="">
             利用規約
           </Link>
@@ -20,7 +20,7 @@ const Footer = () => {
           copyright ©2024. 音ぴしゃ
         </p>
       </div>
-    </div>
+    </footer>
   )
 }
 

@@ -2,7 +2,7 @@
 
 import { Button } from '@/app/components/elements/Button/Button';
 import { SelectComponent } from '@/app/components/elements/Select/SelectComponent';
-import { Mode, SelectComponentWithStateProps } from '@/types/mode';
+import { Mode, SelectComponentWithStateProps } from '@/types/interface';
 import { useRouter } from 'next/navigation';
 import React, { useState } from 'react'
 
