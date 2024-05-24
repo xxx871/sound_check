@@ -1,4 +1,4 @@
-import { SignUpData } from "@/types/interface";
+import { LoginData, SignUpData } from "@/types/interface";
 import axios from 'axios';
 
 const axiosInstance = axios.create({
@@ -12,6 +12,18 @@ export const signUp = async (data: SignUpData) => {
       email: data.email,
       password: data.password,
       password_confirmation: data.password_confirmation,
+    });
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const Login = async (data: LoginData) => {
+  try {
+    const response = await axiosInstance.post("auth/sign_in", {
+      email: data.email,
+      password: data.password,
     });
     return response.data;
   } catch (error) {
