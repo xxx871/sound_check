@@ -1,3 +1,4 @@
+import { ReactNode } from 'react';
 import { UseFormRegister } from 'react-hook-form';
 
 export interface SelectComponentWithStateProps {
@@ -35,4 +36,12 @@ export interface SignUpData {
 export interface LoginData {
   email: string;
   password: string;
+}
+
+export interface ButtonProps {
+  children: ReactNode;
+  onClick?: () => void;
+  bgColor?: string;
+  textColor: string;
+  type: "button" | "submit" | "reset";
 }
