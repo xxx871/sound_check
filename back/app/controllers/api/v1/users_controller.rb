@@ -1,6 +1,6 @@
 module Api
   module V1
-    class UserController < ApplicationController
+    class UsersController < ApplicationController
       before_action :authenticate_api_v1_user!
 
       def show
@@ -14,14 +14,7 @@ module Api
           updated_at: @user.updated_at,
           user_high_note: @user.high_note&.name,  # ここでhigh_noteがオブジェクトか確認
           user_low_note: @user.low_note&.name,  # ここでlow_noteがオブジェクトか確認
-          scores: @user.scores.map { |score| 
-            {
-              id: score.id,
-              mode: score.mode.name,
-              difficulty: score.difficulty.name,
-              score: score.score
-            }
-          }
+          scores: @user.scores.map { |score| { mode: score.mode.name, difficulty: score.difficulty.name, score: score.score } }
         }
       end
     end

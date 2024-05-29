@@ -13,4 +13,8 @@ class User < ActiveRecord::Base
   has_one :high_note, through: :user_high_note, source: :note
   has_one :user_low_note
   has_one :low_note, through: :user_low_note, source: :note
+
+  has_many :scores
+  has_many :modes, through: :scores
+  has_many :difficulties, through: :scores
 end
