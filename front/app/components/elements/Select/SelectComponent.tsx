@@ -1,7 +1,7 @@
 'use client';
 
 import { SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { SelectComponentProps } from "@/types/mode";
+import { SelectComponentProps } from "@/types/interface";
 import * as SelectPrimitive from "@radix-ui/react-select"
 
 const Select = SelectPrimitive.Root

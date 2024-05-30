@@ -1,7 +1,7 @@
 import SelectComponentWithState from "@/features/select/components/SelectComponentWithState";
 import { getPathForMode } from '@/utils/pathUtils';
-import axiosInstance from '@/utils/axiosInstance';
 import { Mode } from "@/types/interface";
+import { axiosInstance } from "@/services/user";
 
 export default async function Home() {
   const res = await axiosInstance.get<Mode[]>('modes');

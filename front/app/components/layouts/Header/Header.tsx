@@ -1,5 +1,5 @@
 import AuthClientButton from '@/features/auth/components/AuthClientButton';
-import axiosInstance from '@/utils/axiosInstance';
+import { axiosInstance } from '@/services/user';
 import { cookies } from 'next/headers';
 import Link from 'next/link'
 import React from 'react'

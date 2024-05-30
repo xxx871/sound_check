@@ -45,3 +45,35 @@ export interface ButtonProps {
   textColor: string;
   type: "button" | "submit" | "reset";
 }
+
+export interface Score {
+  id: number;
+  mode: string;
+  difficulty: string;
+  score: number;
+}
+
+export interface User {
+  name: string;
+  gender: string;
+  user_high_note: string;
+  user_low_note: string;
+}
+
+export interface EditProfileProps {
+  userData: User;
+  genders: Gender[];
+  notes: Note[];
+}
+
+export interface Gender {
+  id: number;
+  name: string;
+}
+
+export interface Note {
+  id: number;
+  frequency: number;
+  ja_note_name: string;
+  en_note_name: string;
+}

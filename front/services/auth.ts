@@ -1,4 +1,4 @@
-import { LoginData, SignUpData } from "@/types/interface";
+import { LoginData, SignUpData, User } from "@/types/interface";
 import axios from 'axios';
 import Cookies from 'js-cookie'
 
@@ -59,4 +59,32 @@ export const signOut = async () => {
   Cookies.remove("client");
   Cookies.remove("access-token");
   return response.data;
+};
+
+export const Edit = async (data: User) => {
+  const accessToken = Cookies.get("access-token") || '';
+  const client = Cookies.get("client") || '';
+  const uid = Cookies.get("uid") || '';
+  try {
+    const response = await axiosInstance.put("user", {
+      user: {
+        name: data.name,
+        gender: data.gender,
+        high_note: data.user_high_note,
+        low_note: data.user_low_note,
+      }
+    }, {
+      headers: {
+        'uid': uid || '',
+        'client': client || '',
+        'access-token': accessToken || ''
+      }
+    });
+    Cookies.set("access-token", response.headers["access-token"]);
+    Cookies.set("client", response.headers["client"]);
+    Cookies.set("uid", response.headers["uid"]);
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
 };

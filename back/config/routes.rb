@@ -8,7 +8,7 @@ Rails.application.routes.draw do
       namespace :auth do
         resources :sessions, only: [:index]
       end
-      resource :user, only: [:show] do
+      resource :user, only: [:show, :update] do
       end
       resources :difficulties, only: [:index]
       resources :genders, only: [:index]

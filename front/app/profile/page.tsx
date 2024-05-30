@@ -1,40 +1,8 @@
-import axiosInstance from '@/utils/axiosInstance';
-import { cookies } from 'next/headers';
+import { Score } from '@/types/interface';
 import { redirect } from "next/navigation";
 import React from 'react'
-
-export interface Score {
-  id: number;
-  mode: string;
-  difficulty: string;
-  score: number;
-}
-
-  
-const getUserData = async () => {
-  const cookieStore = cookies();
-  const accessToken = cookieStore.get('access-token')?.value;
-  const client = cookieStore.get('client')?.value;
-  const uid = cookieStore.get('uid')?.value;
-
-  if(!accessToken || !client || !uid) {
-    return null;
-  }
-
-  try {
-    const response = await axiosInstance.get('user', {
-      headers: {
-        uid: uid,
-        client: client,
-        "access-token": accessToken
-      },
-    });
-    return response.data;
-  } catch (error) {
-    console.log(error);
-    return null;
-  }
-};
+import NextLink from '../components/elements/links/Link';
+import { getUserData } from '@/services/user';
 
 const profile = async () => {
   const userSession = await getUserData();
@@ -98,7 +66,9 @@ const profile = async () => {
       </div>
 
       <div className="flex items-center">
-
+        <NextLink href="/edit" bgColor="bg-blue-500" textColor="text-white">
+          編集
+        </NextLink>
       </div>
     </div>
   );

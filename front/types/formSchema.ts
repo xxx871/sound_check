@@ -31,3 +31,18 @@ export const LoginFormSchema = z.object({
     .string()
     .min(6, {message: "パスワードは6文字以上で入力してください。"})
 });
+
+export const EditFormSchema = z.object({
+  name: z
+    .string()
+    .min(2, {message: "ユーザー名は2文字以上で入力してください。"}),
+  gender: z
+    .string()
+    .min(1, {message: "男性か女性かで入力してください。"}),
+  user_high_note: z
+    .string()
+    .min(2, {message: ""}),
+  user_low_note: z
+    .string()
+    .min(2, "")
+})
