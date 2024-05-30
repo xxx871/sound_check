@@ -15,7 +15,7 @@ const getAllCookies = (): { [key: string]: string } => {
 
 const getUserSession = async (): Promise<{ [key: string]: string }> => {
   const cookie = getAllCookies();
-  const response = await axiosInstance.get("auth/sessions", {
+  const response = await axiosInstance.get("auth/sessions", { 
     headers: {
       uid: cookie["uid"],
       client: cookie["client"],

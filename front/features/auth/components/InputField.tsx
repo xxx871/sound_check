@@ -11,7 +11,7 @@ const InputField = ({
   register
 }: InputFieldProps) => {
   return (
-    <div className="mt-1">
+    <div>
       <label htmlFor="{id}" className="mb-1 block text-2xl text-white">{label}</label>
       <input
         type={type}

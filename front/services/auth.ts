@@ -35,7 +35,7 @@ export const Login = async (data: LoginData) => {
     Cookies.set("access-token", response.headers["access-token"]);
     Cookies.set("client", response.headers["client"]);
     Cookies.set("uid", response.headers["uid"]);
-    return response.data;
+    return response.data; 
   } catch (error) {
     Cookies.remove("uid");
     Cookies.remove("client");

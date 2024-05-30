@@ -7,6 +7,7 @@ Rails.application.routes.draw do
 
       namespace :auth do
         resources :sessions, only: [:index]
+        post 'oauth', to: 'oauth#create'
       end
       resource :user, only: [:show, :update] do
       end
