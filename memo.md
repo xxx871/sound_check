@@ -48,7 +48,7 @@
   /app
     /api
       /auth
-        /[...nextauth]
+        /[...next-auth]
           route.ts
     /components
       /elements
