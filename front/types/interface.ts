@@ -7,7 +7,12 @@ export interface SelectComponentWithStateProps {
 
 export interface SelectComponentProps {
   modes: Mode[];
-  onSelect: (modeId: string) => void;
+  onSelect: (value: string) => void;
+}
+
+export interface SelectDifficultProps {
+  options: string[];
+  onSelect: (value: string) => void;
 }
 
 export interface Mode {

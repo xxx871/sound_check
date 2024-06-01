@@ -17,7 +17,7 @@ export function SelectComponentWithState({ modes }: SelectComponentWithStateProp
 
   const handleStartClick = () => {
     if (selectedMode) {
-      router.push(`${selectedMode.path}`);
+      router.push(`/default?mode=${selectedMode.name}`);
     } else {
       alert('モードを選択してください');
     }
