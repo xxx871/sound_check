@@ -10,14 +10,24 @@ export function SelectComponentWithState({ modes }: SelectComponentWithStateProp
   const [selectedMode, setSelectedMode] = useState<Mode | null>(null);
   const router = useRouter();
 
+  const translateMode = (mode: string) => {
+    switch(mode) {
+      case '通常': return 'normal';
+      case '練習': return 'practice';
+      case 'ハーモニー': return 'harmony';
+      default: return mode;
+    }
+  };
+
   const handleModeSelect = (modeId: string) => {
     const mode = modes.find(mode => mode.id.toString() === modeId);
-      setSelectedMode(mode || null);
+    setSelectedMode(mode || null);
   };
 
   const handleStartClick = () => {
     if (selectedMode) {
-      router.push(`/default?mode=${selectedMode.name}`);
+      const translatedMode = translateMode(selectedMode.name);
+      router.push(`/default?mode=${translatedMode}`);
     } else {
       alert('モードを選択してください');
     }

@@ -11,20 +11,23 @@ const axiosInstance = axios.create({
   baseURL: 'http://localhost:3000/api/v1',
 });
 
-const fetchGender = async () => {
+export const getGenders = async () => {
   const response = await axiosInstance.get("/genders");
   return response.data;
-};
+}
 
-const fetchDifficult = async () => {
-  const response = await axiosInstance.get("difficulties");
+export const getDifficulties = async () => {
+  const response = await axiosInstance.get("/difficulties");
   return response.data;
-};
+}
 
-const setUserInfo = async () => {
+const fetchUserInfo = async () => {
   const uid = Cookies.get("uid") || '';
   const client = Cookies.get("client") || '';
   const accessToken = Cookies.get("access-token") || '';
+  if (!uid || !client || !accessToken) {
+    return null;
+  }
   try {
     const response = await axiosInstance.get("user", {
       headers: {
@@ -42,47 +45,89 @@ const setUserInfo = async () => {
 const Default = () => {
   const [difficulty, setDifficulty] = useState<string>('');
   const [gender, setGender] = useState<string>('');
+  const [difficulties, setDifficulties] = useState<string[]>([]);
+  const [genders, setGenders] = useState<string[]>([]);
   const [userInfo, setUserInfoState] = useState<any>(null);
+  const [showGenderSelect, setShowGenderSelect] = useState<boolean>(true);
   const router = useRouter();
   const searchParams = useSearchParams();
   const mode = searchParams.get('mode');
 
   useEffect(() => {
-    const fetchUserInfo = async () => {
+    const initialize = async () => {
       try {
-        const data = await setUserInfo();
-        setUserInfoState(data);
+        const userInfo = await fetchUserInfo();
+        setUserInfoState(userInfo);
+        setShowGenderSelect(!userInfo || (!userInfo.gender && !userInfo.vocal_range));
+        
+        const gendersData = await getGenders();
+        setGenders(gendersData.map((item: any) => item.name)); // nameのみの配列に変換
+
+        const difficultiesData = await getDifficulties();
+        setDifficulties(difficultiesData.map((item: any) => item.name)); // nameのみの配列に変換
       } catch (error) {
-        console.error("ユーザー情報の取得に失敗しました", error);
+        console.error("データの取得に失敗しました", error);
       }
     };
 
-    fetchUserInfo();
+    initialize();
   }, []);
+
+  const translateDifficulty = (difficulty: string) => {
+    switch(difficulty) {
+      case '簡単': return 'easy';
+      case '普通': return 'normal';
+      case '難しい': return 'hard';
+      default: return difficulty;
+    }
+  };
+
+  const translateGender = (gender: string) => {
+    switch(gender) {
+      case '男性': return 'male';
+      case '女性': return 'female';
+      default: return gender;
+    }
+  };
+
+  const translateModeToJapanese = (mode: string | null) => {
+    switch(mode) {
+      case 'normal': return '通常';
+      case 'practice': return '練習';
+      case 'harmony': return 'ハーモニー';
+      default: return mode;
+    }
+  };
 
   const handleStartClick = () => {
     if (!difficulty) {
       alert('難易度を選択してください');
       return;
     }
-    const path = `/game?mode=${mode}&difficulty=${difficulty}${userInfo ? '' : `&gender=${gender}`}`;
+    if (showGenderSelect && !gender) {
+      alert('性別を選択してください');
+      return;
+    }
+    const translatedDifficulty = translateDifficulty(difficulty);
+    const translatedGender = showGenderSelect ? `&gender=${translateGender(gender)}` : '';
+    const path = `/game?mode=${mode}&difficulty=${translatedDifficulty}${translatedGender}`;
     router.push(path);
   };
 
   return (
     <main className="text-white">
       <h1 className="text-4xl text-center mt-16">
-        通常モード
+        {translateModeToJapanese(mode)}モード
       </h1>
       <div className="mt-16 w-72 mx-auto text-2xl text-slate-300">
         <div className="mb-4">
           <label>難易度</label>
-          <SelectDifficultComponent options={['簡単', '普通', '難しい']} onSelect={setDifficulty} />
+          <SelectDifficultComponent options={difficulties} onSelect={setDifficulty} />
         </div>
-        {userInfo ? null : (
+        {showGenderSelect && (
           <div className="mb-4">
             <label>性別</label>
-            <SelectDifficultComponent options={['男性','女性']} onSelect={setGender}/>
+            <SelectDifficultComponent options={genders} onSelect={setGender} />
           </div>
         )}
         <Button variant="outline" onClick={handleStartClick}>START</Button>
