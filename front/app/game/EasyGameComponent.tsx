@@ -1,35 +1,21 @@
-"use client"
-
 import { useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
-import * as Tone from "tone"
+import * as Tone from "tone";
 import { Button } from "../components/elements/Button/Button";
 import { Note } from "@/types/interface";
-import Cookies from "js-cookie"
+import Cookies from "js-cookie";
 
 interface UserInfo {
   id: number;
   name: string;
-  gender_id?: number;
-  user_high_note?: Note;
-  user_low_note?: Note;
+  gender: string;
+  user_high_note?: Note | null;
+  user_low_note?: Note | null;
 }
 
 const getRandomNote = (notes: Note[]): Note => {
   const randomIndex = Math.floor(Math.random() * notes.length);
   return notes[randomIndex];
-};
-
-const fetchNotes = async (): Promise<Note[]> => {
-  const response = await fetch("http://localhost:3000/api/v1/notes", {
-    cache: 'force-cache',
-  });
-  if (!response.ok) {
-    throw new Error('Failed to fetch notes');
-  }
-  const notes: Note[] = await response.json();
-  console.log("Fetched Notes:", notes); // フィルタリング前のノートリストを出力
-  return notes;
 };
 
 const fetchUserInfo = async (): Promise<UserInfo | null> => {
@@ -51,6 +37,7 @@ const fetchUserInfo = async (): Promise<UserInfo | null> => {
       throw new Error('Failed to fetch user info');
     }
     const userInfo: UserInfo = await response.json();
+    console.log("Fetched User Info:", userInfo);
     return userInfo;
   } catch (error) {
     console.error('Error fetching user info:', error);
@@ -58,19 +45,51 @@ const fetchUserInfo = async (): Promise<UserInfo | null> => {
   }
 };
 
-const fetchGenderNotes = async (genderId: number): Promise<{ low_note: Note; high_note: Note} | null> => {
+const fetchGenderNotesRange = async (genderId: number): Promise<Note[]> => {
+  console.log(`Fetching gender notes range for genderId: ${genderId}`); // ここでログを追加
   try {
-    const response = await fetch(`http://localhost:3000/api/v1/genders/notes/${genderId}`, {
+    const response = await fetch(`http://localhost:3000/api/v1/genders/notes/range/${genderId}`, {
       cache: 'force-cache',
     });
     if (!response.ok) {
-      throw new Error('Failed to fetch gender notes');
+      throw new Error('Failed to fetch gender notes range');
     }
-    const notes = await response.json();
+    const notes: Note[] = await response.json();
+    console.log("Fetched Gender Notes Range:", notes);
     return notes;
   } catch (error) {
-    console.error('Error fetching gender notes:', error);
-    return null;
+    console.error('Error fetching gender notes range:', error);
+    return [];
+  }
+};
+
+const fetchNotesInRange = async (lowNoteName: string, highNoteName: string): Promise<Note[]> => {
+  const url = new URL(`http://localhost:3000/api/v1/notes/range`);
+  url.searchParams.append('low', lowNoteName);
+  url.searchParams.append('high', highNoteName);
+
+  try {
+    const response = await fetch(url.toString());
+    if (!response.ok) {
+      throw new Error('Failed to fetch notes in range');
+    }
+    const notes: Note[] = await response.json();
+    console.log("Fetched Notes In Range:", notes);
+    return notes;
+  } catch (error) {
+    console.error('Error fetching notes in range:', error);
+    return [];
+  }
+};
+
+const getGenderId = (gender: string): number | undefined => {
+  switch (gender) {
+    case '男性':
+      return 1;
+    case '女性':
+      return 2;
+    default:
+      return undefined;
   }
 };
 
@@ -83,44 +102,43 @@ const EasyGameComponent = () => {
     const initialize = async () => {
       try {
         const userInfo = await fetchUserInfo();
-        let notes = await fetchNotes();
+        let notes: Note[] = [];
 
         if (userInfo) {
-          const { user_high_note, user_low_note, gender_id } = userInfo;
+          const { user_high_note, user_low_note, gender } = userInfo;
           console.log("User Info:", userInfo);
 
-          if (user_high_note && user_low_note) {
-            console.log("User High Note:", user_high_note);
-            console.log("User Low Note:", user_low_note);
-            notes = notes.filter(note =>
-              note.frequency >= user_low_note.frequency && note.frequency <= user_high_note.frequency
-            );
-            console.log("Filtered Notes by User Range:", notes);
-          } else if (gender_id) {
-            const genderNotes = await fetchGenderNotes(gender_id);
-            if (genderNotes) {
-              console.log("Gender High Note:", genderNotes.high_note);
-              console.log("Gender Low Note:", genderNotes.low_note);
-              notes = notes.filter(note =>
-                note.frequency >= genderNotes.low_note.frequency && note.frequency <= genderNotes.high_note.frequency
-              );
-              console.log("Filtered Notes by Gender Range:", notes);
+          const gender_id = getGenderId(gender);
+
+          if (userInfo && userInfo.user_high_note && userInfo.user_low_note) {
+            console.log("User High Note:", userInfo.user_high_note);
+            console.log("User Low Note:", userInfo.user_low_note);
+  
+            const notes = await fetchNotesInRange(userInfo.user_low_note.en_note_name, userInfo.user_high_note.en_note_name);
+            
+            if (notes.length === 0) {
+              console.error("No notes available after filtering");
+              return;
             }
+            const randomNote = getRandomNote(notes);
+            setNote(randomNote);
+            console.log("Random Note Selected:", randomNote);
+          } else if (gender_id !== undefined) {
+            console.log(`Fetching notes for gender_id: ${gender_id}`); // ここでログを追加
+            notes = await fetchGenderNotesRange(gender_id);
+            console.log("Filtered Notes by Gender Range:", notes);
+          } else {
+            console.log("Gender ID is undefined. Skipping gender-based note fetch.");
           }
         } else {
           const genderId = parseInt(searchParams.get('genderId') || '', 10);
           if (!isNaN(genderId)) {
-            const genderNotes = await fetchGenderNotes(genderId);
-            if (genderNotes) {
-              console.log("Gender High Note:", genderNotes.high_note);
-              console.log("Gender Low Note:", genderNotes.low_note);
-              notes = notes.filter(note =>
-                note.frequency >= genderNotes.low_note.frequency && note.frequency <= genderNotes.high_note.frequency
-              );
-              console.log("Filtered Notes by Gender Range:", notes);
-            }
+            console.log(`Fetching notes for genderId: ${genderId}`); // ここでログを追加
+            notes = await fetchGenderNotesRange(genderId);
+            console.log("Filtered Notes by Gender Range:", notes);
           }
         }
+
         if (notes.length === 0) {
           console.error("No notes available after filtering");
           return;
@@ -135,15 +153,16 @@ const EasyGameComponent = () => {
     initialize();
   }, []);
 
+
   const playNote = async () => {
     if (!note) {
       console.error("No note to play");
       return;
     }
     await Tone.start(); // ユーザーのジェスチャー内でAudioContextを開始
-    setNoteName(note.ja_note_name); // Noteを再生する前にnoteNameを設定
+    setNoteName(note.en_note_name); // Noteを再生する前にnoteNameを設定
     const synth = new Tone.Synth().toDestination();
-    synth.triggerAttackRelease(note.frequency, '2s');
+    synth.triggerAttackRelease(note.en_note_name, '2s'); // frequencyではなくen_note_nameを使用
     console.log("Playing Note:", note);
   };
 

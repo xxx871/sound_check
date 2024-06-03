@@ -1,21 +1,17 @@
 module Api
   module V1
     class GendersController < ApplicationController
-
       def index
         genders = Gender.all
         render json: genders
       end
 
-      def notes
-        gender = Gender.find(params[:id])
-        if gender
-          low_note = gender.low_note
-          high_note = gender.high_note
-          render json: { low_note: low_note, high_note: high_note }
-        else
-          render json: { error: "Gender not found" }, status: :not_found
-        end
+      def notes_range
+        gender_id = params[:id].to_i
+        low_note = GenderLowNote.find_by(gender_id: gender_id).note
+        high_note = GenderHighNote.find_by(gender_id: gender_id).note
+        notes = Note.where(frequency: low_note.frequency..high_note.frequency)
+        render json: notes
       end
     end
   end

@@ -17,39 +17,53 @@ module Api
 
       def update
         @user = current_api_v1_user
-      
+
         # Update user attributes
         @user.assign_attributes(user_params.except(:high_note, :low_note, :gender))
-      
+
         high_note_params = user_params[:high_note]
         low_note_params = user_params[:low_note]
-      
-        high_note = Note.find_by(id: high_note_params[:id]) if high_note_params.present?
-        low_note = Note.find_by(id: low_note_params[:id]) if low_note_params.present?
-      
-        if high_note.nil? || low_note.nil?
-          render json: { errors: ["指定された音域が見つかりません"] }, status: :unprocessable_entity
-          return
+
+        if high_note_params.present?
+          high_note = Note.find_by(id: high_note_params[:id])
+          if high_note.nil?
+            render json: { errors: ["指定された音域高が見つかりません"] }, status: :unprocessable_entity
+            return
+          end
         end
-      
-        if high_note.frequency < low_note.frequency
-          render json: { errors: ["音域高は音域低より低くすることはできません"] }, status: :unprocessable_entity
-          return
+
+        if low_note_params.present?
+          low_note = Note.find_by(id: low_note_params[:id])
+          if low_note.nil?
+            render json: { errors: ["指定された音域低が見つかりません"] }, status: :unprocessable_entity
+            return
+          end
         end
-      
+
+        if high_note_params.present? && low_note_params.present?
+          if high_note.frequency < low_note.frequency
+            render json: { errors: ["音域高は音域低より低くすることはできません"] }, status: :unprocessable_entity
+            return
+          end
+        end
+
         if user_params[:gender].present?
           gender = Gender.find_by(name: user_params[:gender])
           @user.gender = gender if gender
         end
-      
-        user_high_note = UserHighNote.find_or_initialize_by(user: @user)
-        user_high_note.note = high_note
-        user_high_note.save
-      
-        user_low_note = UserLowNote.find_or_initialize_by(user: @user)
-        user_low_note.note = low_note
-        user_low_note.save
-      
+
+        if high_note_params.present?
+          user_high_note = UserHighNote.find_or_initialize_by(user: @user)
+          user_high_note.note = high_note
+          user_high_note.save
+        end
+
+        if low_note_params.present?
+          user_low_note = UserLowNote.find_or_initialize_by(user: @user)
+          user_low_note.note = low_note
+          user_low_note.save
+        end
+
         if @user.save
           render json: {
             id: @user.id,

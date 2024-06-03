@@ -12,10 +12,14 @@ Rails.application.routes.draw do
       resource :user, only: [:show, :update]
       resources :difficulties, only: [:index]
       resources :genders, only: [:index] do
-        get 'notes/:id', on: :collection, action: :notes
+        get 'notes/range/:id', on: :collection, action: :notes_range
       end
       resources :modes, only: [:index]
-      resources :notes, only: [:index, :show]
+      resources :notes, only: [:index, :show] do
+        collection do
+          get 'range'
+        end
+      end
     end
   end
 end
