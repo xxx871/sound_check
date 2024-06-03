@@ -9,10 +9,11 @@ Rails.application.routes.draw do
         resources :sessions, only: [:index]
         post 'oauth', to: 'oauth#create'
       end
-      resource :user, only: [:show, :update] do
-      end
+      resource :user, only: [:show, :update]
       resources :difficulties, only: [:index]
-      resources :genders, only: [:index]
+      resources :genders, only: [:index] do
+        get 'notes/:id', on: :collection, action: :notes
+      end
       resources :modes, only: [:index]
       resources :notes, only: [:index, :show]
     end

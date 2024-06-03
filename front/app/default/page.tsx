@@ -82,13 +82,13 @@ const Default = () => {
     }
   };
 
-  const translateGender = (gender: string) => {
-    switch(gender) {
-      case '男性': return 'male';
-      case '女性': return 'female';
-      default: return gender;
-    }
-  };
+  // const translateGender = (gender: string) => {
+  //   switch(gender) {
+  //     case '男性': return 'male';
+  //     case '女性': return 'female';
+  //     default: return gender;
+  //   }
+  // };
 
   const translateModeToJapanese = (mode: string | null) => {
     switch(mode) {
@@ -109,8 +109,8 @@ const Default = () => {
       return;
     }
     const translatedDifficulty = translateDifficulty(difficulty);
-    const translatedGender = showGenderSelect ? `&gender=${translateGender(gender)}` : '';
-    const path = `/game?mode=${mode}&difficulty=${translatedDifficulty}${translatedGender}`;
+    const translatedGenderId = gender === '男性' ? 1 : gender === '女性' ? 2 : '';
+    const path = `/game?mode=${mode}&difficulty=${translatedDifficulty}&genderId=${translatedGenderId}`;
     router.push(path);
   };
 

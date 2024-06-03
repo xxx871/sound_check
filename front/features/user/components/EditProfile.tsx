@@ -7,7 +7,7 @@ import { EditProfileProps } from '@/types/interface';
 import React from 'react'
 
 const EditProfile: React.FC<EditProfileProps> = ({ userData, genders, notes }) => {
-  const { form, onSubmit, errorMessage } = useEditForm(userData);
+  const { form, onSubmit, errorMessage } = useEditForm(userData, notes);
   const {
     register,
     handleSubmit,
@@ -50,7 +50,7 @@ const EditProfile: React.FC<EditProfileProps> = ({ userData, genders, notes }) =
           <select
             id="user_high_note"
             {...register('user_high_note')}
-            defaultValue={userData.user_high_note}
+            defaultValue={userData.user_high_note.ja_note_name} // 修正
             className="border border-gray-30 text-gray-900 text-sx rounded-sm focus:border-blue-500 w-full p-2">
             {notes.map(note => (
               <option key={note.id} value={note.ja_note_name}>{note.ja_note_name}</option>
@@ -63,7 +63,7 @@ const EditProfile: React.FC<EditProfileProps> = ({ userData, genders, notes }) =
           <select
             id="user_low_note"
             {...register('user_low_note')}
-            defaultValue={userData.user_low_note}
+            defaultValue={userData.user_low_note.ja_note_name} // 修正
             className="border border-gray-30 text-gray-900 text-sx rounded-sm focus:border-blue-500 w-full p-2">
             {notes.map(note => (
               <option key={note.id} value={note.ja_note_name}>{note.ja_note_name}</option>

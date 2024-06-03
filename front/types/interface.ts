@@ -61,8 +61,8 @@ export interface Score {
 export interface User {
   name: string;
   gender: string;
-  user_high_note: string;
-  user_low_note: string;
+  user_high_note: Note;
+  user_low_note: Note;
 }
 
 export interface EditProfileProps {

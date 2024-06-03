@@ -1,13 +1,13 @@
 import { Edit } from "@/services/auth";
 import { EditFormSchema } from "@/types/formSchema";
-import { User } from "@/types/interface";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { useState } from "react";
+import { User, Note } from "@/types/interface";
 
-export const useEditForm = (userData: User) => {
+export const useEditForm = (userData: User, notes: Note[]) => {
   const router = useRouter();
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
@@ -17,8 +17,8 @@ export const useEditForm = (userData: User) => {
     defaultValues: {
       name: userData.name,
       gender: userData.gender,
-      user_high_note: userData.user_high_note,
-      user_low_note: userData.user_low_note,
+      user_high_note: userData.user_high_note.ja_note_name, // 修正
+      user_low_note: userData.user_low_note.ja_note_name, // 修正
     },
   });
 
@@ -26,12 +26,20 @@ export const useEditForm = (userData: User) => {
     const { name, gender, user_high_note, user_low_note } = value;
     setErrorMessage(null); // Clear previous error messages
 
+    const highNote = notes.find(note => note.ja_note_name === user_high_note);
+    const lowNote = notes.find(note => note.ja_note_name === user_low_note);
+
+    if (!highNote || !lowNote) {
+      setErrorMessage("指定された音域が見つかりません");
+      return;
+    }
+
     try {
       const response = await Edit({
         name,
         gender,
-        user_high_note,
-        user_low_note,
+        user_high_note: highNote,
+        user_low_note: lowNote,
       });
 
       if (response.error) {

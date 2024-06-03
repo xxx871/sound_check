@@ -33,13 +33,13 @@ const profile = async () => {
       
       <div className="bg-white shadow-md rounded p-4">
         <div className="flex items-center">
-          <h2 className="text-lg font-semibold mb-2">音域高：{highNote} (Hz)</h2>
+          <h2 className="text-lg font-semibold mb-2">音域高：{highNote?.ja_note_name} ({highNote?.frequency} Hz)</h2>
         </div>
       </div>
       
       <div className="bg-white shadow-md rounded p-4">
         <div className="flex items-center">
-          <h2 className="text-lg font-semibold mb-2">音域低：{lowNote} (Hz)</h2>
+          <h2 className="text-lg font-semibold mb-2">音域低：{lowNote?.ja_note_name} ({lowNote?.frequency} Hz)</h2>
         </div>
       </div>
       
