@@ -1,5 +1,5 @@
 import { useSearchParams } from "next/navigation";
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import * as Tone from "tone";
 import { Button } from "../components/elements/Button/Button";
 import { Note } from "@/types/interface";
@@ -11,6 +11,10 @@ interface UserInfo {
   gender: string;
   user_high_note?: Note | null;
   user_low_note?: Note | null;
+}
+
+interface EasyGameComponentProps {
+  onPlayNote: (note: string) => void;
 }
 
 const getRandomNote = (notes: Note[]): Note => {
@@ -93,7 +97,7 @@ const getGenderId = (gender: string): number | undefined => {
   }
 };
 
-const EasyGameComponent = () => {
+const EasyGameComponent: React.FC<EasyGameComponentProps> = ({ onPlayNote }) => {
   const [note, setNote] = useState<Note | null>(null);
   const [noteName, setNoteName] = useState<string>('');
   const searchParams = useSearchParams();
@@ -103,42 +107,36 @@ const EasyGameComponent = () => {
       try {
         const userInfo = await fetchUserInfo();
         let notes: Note[] = [];
-
+  
         if (userInfo) {
           const { user_high_note, user_low_note, gender } = userInfo;
           console.log("User Info:", userInfo);
-
-          const gender_id = getGenderId(gender);
-
-          if (userInfo && userInfo.user_high_note && userInfo.user_low_note) {
-            console.log("User High Note:", userInfo.user_high_note);
-            console.log("User Low Note:", userInfo.user_low_note);
   
-            const notes = await fetchNotesInRange(userInfo.user_low_note.en_note_name, userInfo.user_high_note.en_note_name);
-            
-            if (notes.length === 0) {
-              console.error("No notes available after filtering");
-              return;
-            }
-            const randomNote = getRandomNote(notes);
-            setNote(randomNote);
-            console.log("Random Note Selected:", randomNote);
+          const gender_id = getGenderId(gender);
+  
+          if (user_high_note && user_low_note) {
+            console.log("User High Note:", user_high_note);
+            console.log("User Low Note:", user_low_note);
+  
+            notes = await fetchNotesInRange(user_low_note.en_note_name, user_high_note.en_note_name);
+            console.log("Notes in range:", notes);
           } else if (gender_id !== undefined) {
-            console.log(`Fetching notes for gender_id: ${gender_id}`); // ここでログを追加
+            console.log(`Fetching notes for gender_id: ${gender_id}`);
             notes = await fetchGenderNotesRange(gender_id);
-            console.log("Filtered Notes by Gender Range:", notes);
+            console.log("Notes for gender range:", notes);
           } else {
             console.log("Gender ID is undefined. Skipping gender-based note fetch.");
           }
         } else {
           const genderId = parseInt(searchParams.get('genderId') || '', 10);
           if (!isNaN(genderId)) {
-            console.log(`Fetching notes for genderId: ${genderId}`); // ここでログを追加
+            console.log(`Fetching notes for genderId: ${genderId}`);
             notes = await fetchGenderNotesRange(genderId);
-            console.log("Filtered Notes by Gender Range:", notes);
+            console.log("Notes for gender range:", notes);
           }
         }
-
+  
+        console.log("Final Notes List:", notes); // Add this line
         if (notes.length === 0) {
           console.error("No notes available after filtering");
           return;
@@ -152,6 +150,7 @@ const EasyGameComponent = () => {
     };
     initialize();
   }, []);
+  
 
 
   const playNote = async () => {
@@ -164,6 +163,7 @@ const EasyGameComponent = () => {
     const synth = new Tone.Synth().toDestination();
     synth.triggerAttackRelease(note.en_note_name, '2s'); // frequencyではなくen_note_nameを使用
     console.log("Playing Note:", note);
+    onPlayNote(note.en_note_name);
   };
 
   return (
