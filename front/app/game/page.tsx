@@ -1,4 +1,4 @@
-"use client";
+"use client"
 
 import { useRouter, useSearchParams } from 'next/navigation';
 import React, { useState, useEffect } from 'react';
@@ -52,7 +52,9 @@ const Game = () => {
     const queryParams = new URLSearchParams({
       difficulty: difficulty || '',
       mode: mode || '',
-      genderId: genderId || ''
+      genderId: genderId || '',
+      modeId: searchParams.get('modeId') || '0',
+      difficultyId: searchParams.get('difficultyId') || '0'
     }).toString();
     router.push(`/result?${queryParams}`);
   };

@@ -20,6 +20,7 @@ Rails.application.routes.draw do
           get 'range'
         end
       end
+      put 'scores/update', to: 'scores#update'
     end
   end
 end
