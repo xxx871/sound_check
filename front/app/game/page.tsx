@@ -1,8 +1,7 @@
-// front/app/game/page.tsx
-"use client"
+"use client";
 
-import { useSearchParams } from 'next/navigation';
-import React, { useState } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
+import React, { useState, useEffect } from 'react';
 import EasyGameComponent from './EasyGameComponent';
 import NormalGameComponent from './NormalGameComponent';
 import HardGameComponent from './HardGameComponent';
@@ -11,9 +10,21 @@ import VoiceAnalysisComponent from './VoiceAnalysisComponent';
 const Game = () => {
   const searchParams = useSearchParams();
   const difficulty = searchParams.get('difficulty');
+  const mode = searchParams.get('mode');
+  const genderId = searchParams.get('genderId');
+  const router = useRouter();
   const [targetNote, setTargetNote] = useState<string | null>(null);
   const [isMatch, setIsMatch] = useState<boolean | null>(null);
   const [detectedPitches, setDetectedPitches] = useState<number[]>([]);
+  const [matchCount, setMatchCount] = useState<number>(0);
+
+  useEffect(() => {
+    // セッションストレージから一致回数を取得
+    const storedMatchCount = sessionStorage.getItem('matchCount');
+    if (storedMatchCount) {
+      setMatchCount(parseInt(storedMatchCount, 10));
+    }
+  }, []);
 
   const handlePlayNote = (note: string) => {
     setTargetNote(note);
@@ -21,10 +32,29 @@ const Game = () => {
 
   const handleAnalysisResult = (result: boolean) => {
     setIsMatch(result);
+    if (result) {
+      setMatchCount(prevCount => {
+        const newCount = prevCount + 1;
+        sessionStorage.setItem('matchCount', newCount.toString()); // 一致回数をセッションストレージに保存
+        return newCount;
+      });
+    } else {
+      setMatchCount(0);
+      sessionStorage.setItem('matchCount', '0'); // 不一致の場合、一致回数をリセット
+    }
   };
 
   const handlePitchDetected = (pitch: number) => {
     setDetectedPitches(prevPitches => [...prevPitches, pitch]);
+  };
+
+  const handleResultClick = () => {
+    const queryParams = new URLSearchParams({
+      difficulty: difficulty || '',
+      mode: mode || '',
+      genderId: genderId || ''
+    }).toString();
+    router.push(`/result?${queryParams}`);
   };
 
   const renderGameComponent = () => {
@@ -54,15 +84,10 @@ const Game = () => {
         )}
         {isMatch !== null && (
           <div>
-            {isMatch ? 'Matched!' : 'Not Matched!'}
-          </div>
-        )}
-        {detectedPitches.length > 0 && (
-          <div>
-            <h2>Detected Pitches:</h2>
-            {/* {detectedPitches.map((pitch, index) => (
-              <p key={index}>Pitch: {pitch.toFixed(2)} Hz</p>
-            ))} */}
+            {isMatch ? '一致' : '不一致'}
+            <button onClick={handleResultClick} className="mt-4 p-2 bg-blue-500 text-white">
+              結果へ進む
+            </button>
           </div>
         )}
       </div>

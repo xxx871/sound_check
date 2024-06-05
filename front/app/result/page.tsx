@@ -1,23 +1,46 @@
-'use client';
+"use client";
 
+import { useRouter, useSearchParams } from 'next/navigation';
 import React from 'react';
-import { useSearchParams, useRouter } from 'next/navigation';
 
-const ResultComponent: React.FC = () => {
+const Result = () => {
   const searchParams = useSearchParams();
+  const difficulty = searchParams.get('difficulty');
+  const mode = searchParams.get('mode');
+  const genderId = searchParams.get('genderId');
   const router = useRouter();
-  const isMatch = searchParams.get('isMatch');
+
+  const handleBackToHome = () => {
+    sessionStorage.removeItem('matchCount'); // トップページに戻る際に一致回数を破棄
+    router.push('/');
+  };
+
+  const handlePlayAgain = () => {
+    const queryParams = new URLSearchParams({
+      difficulty: difficulty || '',
+      mode: mode || '',
+      genderId: genderId || ''
+    }).toString();
+    router.push(`/game?${queryParams}`);
+  };
+
+  // セッションストレージから一致回数を取得
+  const matchCount = parseInt(sessionStorage.getItem('matchCount') || '0', 10);
 
   return (
-    <div className="text-white">
-      {isMatch === 'true' ? (
-        <h1>Correct! Your pitch matched the target note.</h1>
-      ) : (
-        <h1>Incorrect. Your pitch did not match the target note.</h1>
-      )}
-      <button onClick={() => router.push('/')}>Back to Home</button>
-    </div>
+    <main className="text-white">
+      <h1 className="text-4xl text-center mt-16">結果画面</h1>
+      <div className="mt-16 w-72 mx-auto text-2xl text-slate-300">
+        <p>連続で一致した回数: {matchCount}</p>
+        <button onClick={handleBackToHome} className="mt-4 p-2 bg-blue-500 text-white">
+          トップページへ戻る
+        </button>
+        <button onClick={handlePlayAgain} className="mt-4 p-2 bg-blue-500 text-white">
+          もう一度遊ぶ
+        </button>
+      </div>
+    </main>
   );
 };
 
-export default ResultComponent;
+export default Result;

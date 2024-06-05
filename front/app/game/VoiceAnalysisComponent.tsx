@@ -59,6 +59,9 @@ const VoiceAnalysisComponent: React.FC<VoiceAnalysisComponentProps> = ({ targetN
               const closestNote = findClosestNote(pitch);
               setFirstDetectedFrequency({ frequency: pitch, note: closestNote });
               onPitchDetected(pitch, closestNote);
+              // Check if the detected note matches the target note
+              const isMatch = closestNote === targetNote;
+              onResult(isMatch);
             }
             pitchesRef.current.push(pitch); // Keep recording all pitches
           }
