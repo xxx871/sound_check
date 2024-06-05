@@ -1,29 +1,38 @@
 import React, { useEffect, useRef, useState } from 'react';
 import * as Tone from 'tone';
-import * as Pitchfinder from "pitchfinder";
+import * as Pitchfinder from 'pitchfinder';
+import { notes } from '@/types/interface';
 
 interface VoiceAnalysisComponentProps {
   targetNote: string;
   onResult: (isMatch: boolean) => void;
+  onPitchDetected: (pitch: number, note: string) => void;
 }
 
-interface ProbabilityPitch {
-  probability: number;
-  freq: number;
-}
-
-const VoiceAnalysisComponent: React.FC<VoiceAnalysisComponentProps> = ({ targetNote, onResult }) => {
+const VoiceAnalysisComponent: React.FC<VoiceAnalysisComponentProps> = ({ targetNote, onResult, onPitchDetected }) => {
   const [isRecording, setIsRecording] = useState<boolean>(false);
   const [analyzing, setAnalyzing] = useState<boolean>(false);
+  const [firstDetectedFrequency, setFirstDetectedFrequency] = useState<{ frequency: number, note: string } | null>(null);
+  const pitchesRef = useRef<number[]>([]);
   const audioContextRef = useRef<AudioContext | null>(null);
   const analyserRef = useRef<AnalyserNode | null>(null);
   const scriptProcessorRef = useRef<ScriptProcessorNode | null>(null);
   const bufferLength = 2048;
   const threshold = 0.01; // 振幅のしきい値
 
+  const findClosestNote = (frequency: number) => {
+    const closest = notes.reduce((acc, note) => {
+      const diff = Math.abs(frequency - note.frequency);
+      return diff < acc.diff ? { note: note.en_note_name, frequency: note.frequency, diff } : acc;
+    }, { note: '', frequency: 0, diff: Infinity });
+    return closest.note;
+  };
+
   const startRecording = async () => {
     setIsRecording(true);
     setAnalyzing(false);
+    pitchesRef.current = [];
+    setFirstDetectedFrequency(null); // Reset the first detected frequency
     const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
     audioContextRef.current = new AudioContext();
     analyserRef.current = audioContextRef.current.createAnalyser();
@@ -37,26 +46,21 @@ const VoiceAnalysisComponent: React.FC<VoiceAnalysisComponentProps> = ({ targetN
     scriptProcessorRef.current.onaudioprocess = (event) => {
       if (!analyzing) {
         const inputBuffer = event.inputBuffer.getChannelData(0);
-        const detectPitch = Pitchfinder.YIN({ sampleRate: audioContextRef.current!.sampleRate });
-        const pitch = detectPitch(inputBuffer) as ProbabilityPitch | null;
+        const maxAmplitude = Math.max(...inputBuffer.map(sample => Math.abs(sample)));
+    
+        if (maxAmplitude > threshold) {
+          const detectPitch = Pitchfinder.AMDF({ sampleRate: audioContextRef.current!.sampleRate });
+          const pitch = detectPitch(inputBuffer);
 
-        console.log('Pitch detection result:', pitch);
-
-        if (pitch && pitch.probability > 0.8) {
-          const frequency = pitch.freq;
-          const amplitude = Math.max(...inputBuffer.map(sample => Math.abs(sample)));
-          console.log('Detected frequency:', frequency);
-          console.log('Amplitude:', amplitude);
-
-          if (amplitude > threshold && frequency < 5000) { // 振幅のしきい値をチェック
-            const detectedNote = Tone.Frequency(frequency).toNote();
-            console.log('Detected note:', detectedNote);
-            if (detectedNote === targetNote) {
-              setAnalyzing(true);
-              onResult(true);
-            } else {
-              onResult(false);
+          console.log(pitch);
+    
+          if (pitch !== null) {
+            if (pitchesRef.current.length === 0) { // Only set the first detected pitch
+              const closestNote = findClosestNote(pitch);
+              setFirstDetectedFrequency({ frequency: pitch, note: closestNote });
+              onPitchDetected(pitch, closestNote);
             }
+            pitchesRef.current.push(pitch); // Keep recording all pitches
           }
         }
       }
@@ -68,6 +72,8 @@ const VoiceAnalysisComponent: React.FC<VoiceAnalysisComponentProps> = ({ targetN
       if (audioContextRef.current) {
         audioContextRef.current.close();
       }
+      // コンソールにピッチ配列を出力
+      console.log("All detected pitches:", pitchesRef.current);
     }, 3000);
   };
 
@@ -76,6 +82,11 @@ const VoiceAnalysisComponent: React.FC<VoiceAnalysisComponentProps> = ({ targetN
       <button onClick={startRecording} disabled={isRecording}>
         {isRecording ? 'Recording...' : 'Start Recording'}
       </button>
+      <div className="text-white">
+        {firstDetectedFrequency && (
+          <p>First Detected Frequency: {firstDetectedFrequency.frequency.toFixed(2)} Hz - {firstDetectedFrequency.note}</p>
+        )}
+      </div>
     </div>
   );
 };

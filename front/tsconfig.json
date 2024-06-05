@@ -1,5 +1,6 @@
 {
   "compilerOptions": {
+    // 既存の設定はそのまま
     "lib": ["dom", "dom.iterable", "esnext"],
     "allowJs": true,
     "skipLibCheck": true,
@@ -8,7 +9,7 @@
     "esModuleInterop": true,
     "module": "esnext",
     "moduleResolution": "bundler",
-    "target": "es2015", // または "es6", "es2016", "es2017", など
+    "target": "es2015",
     "downlevelIteration": true,
     "resolveJsonModule": true,
     "isolatedModules": true,
@@ -23,6 +24,12 @@
       "@/*": ["./*"]
     }
   },
-  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"],
+  "include": [
+    "next-env.d.ts",
+    "**/*.ts",
+    "**/*.tsx",
+    ".next/types/**/*.ts",
+    "src/worklets/**/*.ts" // 追加
+  ],
   "exclude": ["node_modules"]
 }
