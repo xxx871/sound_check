@@ -1,7 +1,7 @@
 module Api
   module V1
     class ScoresController < ApplicationController
-      before_action :authenticate_api_v1_user!, expect: [:ranking]
+      before_action :authenticate_api_v1_user!, except: [:ranking]
 
       def update
         mode_id = params[:mode_id]

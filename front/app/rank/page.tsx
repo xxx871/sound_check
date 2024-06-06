@@ -27,11 +27,6 @@ const fetchRanking = async (modeId: number, difficultyId: number): Promise<Ranki
     params: {
       mode_id: modeId,
       difficulty_id: difficultyId
-    },
-    headers: {
-      uid: Cookies.get("uid") || '',
-      client: Cookies.get("client") || '',
-      'access-token': Cookies.get("access-token") || ''
     }
   });
   return response.data;
