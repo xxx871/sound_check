@@ -3,6 +3,7 @@ import { axiosInstance } from '@/services/user';
 import { cookies } from 'next/headers';
 import Link from 'next/link'
 import React from 'react'
+import ModalTrigger from './ModalTrigger';
 
 const getAllCookies = (): { [key: string]: string } => {
   const cookieStore = cookies();
@@ -30,20 +31,18 @@ const Header = async () => {
   return (
     <header className="divide-y border-gray-200 dark:border-gray-800 border-b bg-blue-900">
       <div className="px-4 py-2 md:py-2 lg:px-6">
-        <div className="items-center space-y-2 md:space-y-0 md:space-x-6 text-white font-palettemosaic">
-          <Link href="/" className="float-left text-3xl font-bold tracking-tighter mr-4 border-2 p-2 rounded-full">
+        <div className="items-center space-y-2 md:space-y-0 md:space-x-6 font-palettemosaic">
+          <Link href="/" className="text-white float-left text-3xl font-bold tracking-tighter mr-4 border-2 p-2 rounded-full">
             おんぴしゃ
           </Link>
           <nav className="flex justify-end items-center space-x-6 text-2xl">
-            <Link href="/about" className="font-medium text-white transition-colors hover:text-gray-300">
-              遊び方
-            </Link>
+            <ModalTrigger />
             <Link href="/rank" className="font-medium text-white transition-colors hover:text-gray-300">
               ランキング
             </Link>
             {userSession.is_login ? (
               <>
-                <Link href="/profile">プロフィール</Link>
+                <Link href="/profile" className="text-white">プロフィール</Link>
                 <AuthClientButton
                   bgColor="bg-black"
                   textColor="text-white"
