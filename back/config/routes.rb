@@ -21,6 +21,7 @@ Rails.application.routes.draw do
         end
       end
       put 'scores/update', to: 'scores#update'
+      get 'scores/ranking', to: 'scores#ranking'
     end
   end
 end
