@@ -1,3 +1,4 @@
+// front/features/user/components/EditProfile.tsx
 "use client"
 
 import Button from '@/features/auth/components/Button';
@@ -5,6 +6,7 @@ import InputField from '@/features/auth/components/InputField';
 import { useEditForm } from '@/features/auth/hooks/useEditForm';
 import { EditProfileProps } from '@/types/interface';
 import React from 'react'
+import ModalTrigger from './ModalTrigger';
 
 const EditProfile: React.FC<EditProfileProps> = ({ userData, genders, notes }) => {
   const { form, onSubmit, errorMessage } = useEditForm(userData, notes);
@@ -38,7 +40,7 @@ const EditProfile: React.FC<EditProfileProps> = ({ userData, genders, notes }) =
             id="gender"
             {...register('gender')}
             defaultValue={userData.gender || ''}
-            className="border border-gray-30 text-gray-900 text-sx rounded-sm focus:border-blue-500 w-full p-2">
+            className="border border-gray-300 text-gray-900 text-sx rounded-sm focus:border-blue-500 w-full p-2">
             <option value="">未選択</option>
             {genders.map(gender => (
               <option key={gender.id} value={gender.name}>{gender.name}</option>
@@ -52,7 +54,7 @@ const EditProfile: React.FC<EditProfileProps> = ({ userData, genders, notes }) =
             id="user_high_note"
             {...register('user_high_note')}
             defaultValue={userData.user_high_note?.ja_note_name || ''}
-            className="border border-gray-30 text-gray-900 text-sx rounded-sm focus:border-blue-500 w-full p-2">
+            className="border border-gray-300 text-gray-900 text-sx rounded-sm focus:border-blue-500 w-full p-2">
             <option value="">未選択</option>
             {notes.map(note => (
               <option key={note.id} value={note.ja_note_name}>{note.ja_note_name}</option>
@@ -66,7 +68,7 @@ const EditProfile: React.FC<EditProfileProps> = ({ userData, genders, notes }) =
             id="user_low_note"
             {...register('user_low_note')}
             defaultValue={userData.user_low_note?.ja_note_name || ''}
-            className="border border-gray-30 text-gray-900 text-sx rounded-sm focus:border-blue-500 w-full p-2">
+            className="border border-gray-300 text-gray-900 text-sx rounded-sm focus:border-blue-500 w-full p-2">
             <option value="">未選択</option>
             {notes.map(note => (
               <option key={note.id} value={note.ja_note_name}>{note.ja_note_name}</option>
@@ -74,12 +76,13 @@ const EditProfile: React.FC<EditProfileProps> = ({ userData, genders, notes }) =
           </select>
           {errors.user_low_note && <span>{errors.user_low_note.message}</span>}
         </div>
-      <div className="mt-4">
-        <Button type="submit" textColor="text-white" bgColor="bg-blue-500">保存</Button>
-      </div>
+        <ModalTrigger notes={notes} />
+        <div className="mt-4">
+          <Button type="submit" textColor="text-white" bgColor="bg-blue-500">保存</Button>
+        </div>
       </form>
     </div>
   )
 }
 
-export default EditProfile
+export default EditProfile;
