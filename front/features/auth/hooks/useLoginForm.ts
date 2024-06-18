@@ -1,27 +1,28 @@
 import { zodResolver } from "@hookform/resolvers/zod";
-import { LoginFormSchema } from "@/types/formSchema";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
+import { loginFormSchema } from "../validation/loginFormSchema";
 import { z } from "zod";
-import { Login } from "@/services/auth";
+import { login } from "../api/login";
+import { useState } from "react";
 
 export const useLoginForm = () => {
   const router = useRouter();
+  const [serverError, setServerError] = useState<string | null>(null);
 
   const form = useForm({
     mode: "onChange",
-    resolver: zodResolver(LoginFormSchema),
+    resolver: zodResolver(loginFormSchema),
     defaultValues: {
       email: "",
       password: "",
     },
   });
 
-  const onSubmit = async (value: z.infer<typeof LoginFormSchema>) => {
+  const onSubmit= async (value: z.infer<typeof loginFormSchema>) => {
     const { email, password } = value;
-    console.log(value);
     try {
-      const response = await Login({
+      const response = await login({
         email,
         password
       });
@@ -34,9 +35,9 @@ export const useLoginForm = () => {
       router.push("/");
       router.refresh();
     } catch (error: any) {
-      console.log(error.response);
+      setServerError(error.message);
     }
   };
 
-  return { form, onSubmit };
+  return { form, onSubmit, serverError };
 };

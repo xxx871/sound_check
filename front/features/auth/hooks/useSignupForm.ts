@@ -1,12 +1,14 @@
 import { zodResolver } from "@hookform/resolvers/zod";
-import { signUpFormSchema } from "@/types/formSchema";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
-import { signUp } from "@/services/auth";
+import { signUp } from "../api/signUp";
+import { useState } from "react";
+import { signUpFormSchema } from "../validation/signUpFormSchema";
 
 export const useSignupForm = () => {
   const router = useRouter();
+  const [serverError, setServerError] = useState<string | null>(null);
 
   const form = useForm({
     mode: "onChange",
@@ -21,7 +23,6 @@ export const useSignupForm = () => {
 
   const onSubmit = async (value: z.infer<typeof signUpFormSchema>) => {
     const { name, email, password, password_confirmation } = value;
-    console.log(value);
     try {
       const response = await signUp({
         name,
@@ -38,9 +39,14 @@ export const useSignupForm = () => {
       router.push("/");
       router.refresh();
     } catch (error: any) {
-      console.log(error.response);
+      if (error.response && error.response.data && error.response.data.errors) {
+        const errorMessage = error.response.data.errors.full_messages ? error.response.data.errors.full_messages[0] : "登録中にエラーが発生しました。";
+        setServerError(errorMessage);
+      } else {
+        setServerError("登録中にエラーが発生しました。");
+      }
     }
   };
 
-  return { form, onSubmit };
+  return { form, onSubmit, serverError };
 };

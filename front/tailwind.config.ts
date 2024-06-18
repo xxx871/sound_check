@@ -7,6 +7,7 @@ const config = {
     './components/**/*.{ts,tsx}',
     './app/**/*.{ts,tsx}',
     './src/**/*.{ts,tsx}',
+    './features/**/*.{ts,tsx}',
 	],
   prefix: "",
   theme: {
@@ -18,6 +19,10 @@ const config = {
       },
     },
     extend: {
+      fontFamily: {
+        recursive: "var(--font-recursive)",
+        palettemosaic: "var(--font-palettemosaic)",
+      },
       colors: {
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",

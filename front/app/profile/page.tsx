@@ -1,77 +1,32 @@
-import { Score } from '@/types/interface';
+import { getProfile } from "@/lib/api/getProfile";
+import UserProfile from "@/features/user/components/UserProfile";
+import Link from "next/link";
 import { redirect } from "next/navigation";
 import React from 'react'
-import NextLink from '../components/elements/links/Link';
-import { getUserData } from '@/services/user';
 
-const profile = async () => {
-  const userSession = await getUserData();
-  console.log("response_data", userSession);
-
-  if (!userSession) {
+const Profile = async () => {
+  const userData = await getProfile();
+  if (!userData) {
     redirect("/login");
-    return;
   }
-
-  const { user_high_note: highNote, user_low_note: lowNote, scores, gender } = userSession;
+  const { name, user_high_note: highNote, user_low_note: lowNote, scores, gender } = userData;
 
   return (
-    <div className="container mx-auto p-4">
-      <h1 className="text-x1 font-bold mb-4">プロフィール</h1>
-
-      <div className="bg-white shadow-md rounded p-4">
-        <div className="flex items-center">
-          <h2 className="text-lg font-semibold mb-2">お名前：{userSession.name}</h2>
-        </div>
-      </div>
-      
-      <div className="bg-white shadow-md rounded p-4">
-        <div className="flex items-center">
-          <h2 className="text-lg font-semibold mb-2">性別：{gender}</h2>
-        </div>
-      </div>
-      
-      <div className="bg-white shadow-md rounded p-4">
-        <div className="flex items-center">
-          <h2 className="text-lg font-semibold mb-2">音域高：{highNote?.ja_note_name} ({highNote?.frequency} Hz)</h2>
-        </div>
-      </div>
-      
-      <div className="bg-white shadow-md rounded p-4">
-        <div className="flex items-center">
-          <h2 className="text-lg font-semibold mb-2">音域低：{lowNote?.ja_note_name} ({lowNote?.frequency} Hz)</h2>
-        </div>
-      </div>
-      
-      <div className="bg-white shadow-md rounded p-4">
-        <h2 className="text-lg font-semibold mb-2">スコア</h2>
-        <ul>
-          {scores.map((score: Score) => (
-            <li key={score.id} className="mb-2">
-              <div className="flex items-center">
-                <h3 className="text-md font-semibold mr-2">モード：</h3>
-                <p>{score.mode}</p>
-              </div>
-              <div className="flex items-center">
-                <h3 className="text-md font-semibold mr-2">難易度：</h3>
-                <p>{score.difficulty}</p>
-              </div>
-              <div className="flex items-center">
-                <h3 className="text-md font-semibold mr-2">スコア：</h3>
-                <p>{score.score}</p>
-              </div>
-            </li>
-          ))}
-        </ul>
-      </div>
-
-      <div className="flex items-center">
-        <NextLink href="/edit" bgColor="bg-blue-500" textColor="text-white">
+    <div className="max-w-sm mx-auto mt-10 grig gap-6">
+      <UserProfile
+        name={name}
+        gender={gender}
+        highNote={highNote}
+        lowNote={lowNote}
+        scores={scores}
+      />
+      <div className="flex items-center text-white mt-4">
+        <Link href="/profile/edit" className="bg-black px-4 py-2 rounded">
           編集
-        </NextLink>
+        </Link>
       </div>
     </div>
-  );
+  )
 }
 
-export default profile
+export default Profile
