@@ -26,6 +26,11 @@ const Login = () => {
           初めてご利用の方はこちら
         </Link>
       </div>
+      <div className="text-center mt-4">
+        <Link href="/password" className="text-white hover:underline text-xl">
+          パスワードをお忘れの方はこちら
+        </Link>
+      </div>
     </div>
   )
 }
