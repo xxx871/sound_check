@@ -12,7 +12,7 @@ const Footer = () => {
           <Link href="/" className="">
             プライバシーポリシー
           </Link>
-          <Link href="/" className="">
+          <Link href="/contact" className="">
             お問い合わせ
           </Link>
         </nav>
