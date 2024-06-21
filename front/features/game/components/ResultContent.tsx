@@ -1,3 +1,4 @@
+// front/features/game/components/ResultContent.tsx
 "use client"
 
 import { User } from '@/types/interface'
@@ -5,6 +6,10 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import React, { useEffect } from 'react'
 import { updateScore } from '../api/updateScore';
 import { Button } from '@/components/ui/button';
+import {
+  TwitterShareButton,
+  TwitterIcon,
+} from 'react-share';
 
 interface resultContentProps {
   userInfo: User;
@@ -30,9 +35,11 @@ const ResultContent: React.FC<resultContentProps> = ({ userInfo }) => {
     router.push('/');
   };
 
-  const handlePlayAgain= () => {
+  const handlePlayAgain = () => {
     router.push(`/normal?modeId=${modeId}&difficultyId=${difficultyId}&genderId=${genderId}`);
   }
+
+  const tweetText = `私は「音ピシャ」で連続${matchCount}回一致しました！あなたも挑戦してみてください！`;
 
   return (
     <main className="text-white">
@@ -45,13 +52,21 @@ const ResultContent: React.FC<resultContentProps> = ({ userInfo }) => {
           <Button onClick={handleBackToHome} className="mt-4 p-2 bg-blue-500 text-white">
             トップページへ戻る
           </Button>
-          <Button onClick={handlePlayAgain}>
+          <Button onClick={handlePlayAgain} className="mt-4 p-2 bg-green-500 text-white">
             もう一度遊ぶ
           </Button>
+          <TwitterShareButton
+            url={window.location.href}
+            title={tweetText}
+            className="mt-4"
+          >
+            <TwitterIcon size={32} round />
+            ツイートする
+          </TwitterShareButton>
         </div>
       </div>
     </main>
   )
 }
 
-export default ResultContent
+export default ResultContent;
