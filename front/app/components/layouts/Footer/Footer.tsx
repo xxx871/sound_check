@@ -6,7 +6,7 @@ const Footer = () => {
     <div className="bg-white fixed bottom-0 w-full text-white border-gray-200 border-t">
       <div className="items-center bg-blue-900 text-center">
         <nav className="space-x-40 text-lg">
-          <Link href="/" className="">
+          <Link href="/term" className="">
             利用規約
           </Link>
           <Link href="/" className="">
