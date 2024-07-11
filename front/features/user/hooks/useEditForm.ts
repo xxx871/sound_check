@@ -10,6 +10,8 @@ import { EditFormSchema } from "../validation/EditFormSchema";
 export const useEditForm = (userData: User, notes: Note[]) => {
   const router = useRouter();
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
+
 
   const form = useForm({
     mode: "onChange",
@@ -23,6 +25,7 @@ export const useEditForm = (userData: User, notes: Note[]) => {
   });
 
   const onSubmit = async (value: z.infer<typeof EditFormSchema>) => {
+    setIsLoading(true);
     const {name, gender, user_high_note, user_low_note} = value;
     setErrorMessage(null);
 
@@ -56,7 +59,10 @@ export const useEditForm = (userData: User, notes: Note[]) => {
     router.refresh();
     } catch (error: any) {
       setErrorMessage(error.message || "エラーが発生しました。");
+    } finally {
+      setIsLoading(false);
     }
   };
-  return { form, onSubmit, errorMessage };
+
+  return { form, onSubmit, errorMessage, isLoading };
 }

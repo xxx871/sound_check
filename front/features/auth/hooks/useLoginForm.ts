@@ -9,6 +9,7 @@ import { useState } from "react";
 export const useLoginForm = () => {
   const router = useRouter();
   const [serverError, setServerError] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
 
   const form = useForm({
     mode: "onChange",
@@ -20,6 +21,7 @@ export const useLoginForm = () => {
   });
 
   const onSubmit= async (value: z.infer<typeof loginFormSchema>) => {
+    setIsLoading(true);
     const { email, password } = value;
     try {
       const response = await login({
@@ -36,8 +38,10 @@ export const useLoginForm = () => {
       router.refresh();
     } catch (error: any) {
       setServerError(error.message);
+    } finally {
+      setIsLoading(false);
     }
   };
 
-  return { form, onSubmit, serverError };
+  return { form, onSubmit, serverError, isLoading };
 };

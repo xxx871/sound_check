@@ -4,9 +4,10 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import React from 'react'
 import { usePasswordChangeForm } from '../hooks/usePasswordChangeForm'
+import { LoadingButton } from '@/app/components/elements/LoadingButton'
 
 const PasswordChangeForm = () => {
-  const { form, onSubmit, serverError } = usePasswordChangeForm();
+  const { form, onSubmit, serverError, isLoading } = usePasswordChangeForm();
   const {
     register,
     handleSubmit,
@@ -40,7 +41,14 @@ const PasswordChangeForm = () => {
         </div>
         {serverError && <p className="text-white mt-4">{serverError}</p>}
         <div className="mt-4">
-          <Button type="submit">送信</Button>
+        <LoadingButton
+            type="submit"
+            variant="outline"
+            className="w-32 h-12 text-lg text-white"
+            isLoading={isLoading}
+          >
+            送信
+          </LoadingButton>
         </div>
       </form>
     </div>

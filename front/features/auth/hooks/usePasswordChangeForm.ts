@@ -7,6 +7,7 @@ import { z } from "zod";
 import { passwordChange } from "../api/passwordChange";
 
 export const usePasswordChangeForm = () => {
+  const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
   const [serverError, setServerError ] = useState<string | null>(null);
   const searchParams = useSearchParams();
@@ -22,6 +23,7 @@ export const usePasswordChangeForm = () => {
   });
 
   const onSubmit = async (value: z.infer<typeof passwordChangeFormSchema>) => {
+    setIsLoading(true);
     const { password, password_confirmation } = value;
     try {
       const response = await passwordChange({
@@ -43,8 +45,10 @@ export const usePasswordChangeForm = () => {
       } else {
         setServerError("登録中にエラーが発生しました。");
       }
+    } finally {
+      setIsLoading(false);
     }
   };
 
-  return { form, onSubmit, serverError };
+  return { form, onSubmit, serverError, isLoading };
 };

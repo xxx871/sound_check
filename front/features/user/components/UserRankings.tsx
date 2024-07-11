@@ -4,6 +4,7 @@ import { Difficult, Mode } from '@/types/interface'
 import React, { useEffect, useState } from 'react'
 import { RankingEntry, getRanking } from '../api/getRanking';
 import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Icon } from '@/app/components/icon';
 
 interface UserRankingsProps {
   modes: Mode[];
@@ -14,12 +15,15 @@ const UserRankings: React.FC<UserRankingsProps> = ({ modes, difficulties }) => {
   const [selectedMode, setSelectedMode] = useState<number | null>(null);
   const [selectedDifficulty, setSelectedDifficulty] = useState<number | null>(null);
   const [rankings, setRankings] = useState<RankingEntry[]>([]);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
 
   useEffect(() => {
     if (selectedMode !== null && selectedDifficulty !== null) {
       const getUsersRanking = async () => {
+        setIsLoading(true);
         const rankingData = await getRanking(selectedMode, selectedDifficulty);
         setRankings(rankingData);
+        setIsLoading(false);
       };
 
       getUsersRanking();
@@ -66,7 +70,9 @@ const UserRankings: React.FC<UserRankingsProps> = ({ modes, difficulties }) => {
         </div>
       </div>
       <div className="mt-8 text-2xl">
-        {rankings.length > 0 ? (
+        {isLoading ? (
+          <Icon.spinner className="animate-spin" />
+        ) : rankings.length > 0 ? (
           rankings.map((ranking, index) => (
             <div key={index} className="mb-2">
               <p>No.{index + 1} {ranking.user.name} {ranking.score}回</p>

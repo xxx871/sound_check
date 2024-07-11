@@ -4,9 +4,10 @@ import React from 'react'
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { usePasswordResetForm } from '../hooks/usePasswordResetForm';
+import { LoadingButton } from '@/app/components/elements/LoadingButton';
 
 const PasswordResetForm = () => {
-  const { form, onSubmit, serverError } = usePasswordResetForm();
+  const { form, onSubmit, serverError, isLoading } = usePasswordResetForm();
   const {
     register,
     handleSubmit,
@@ -29,7 +30,14 @@ const PasswordResetForm = () => {
         </div>
         {serverError && <p className="text-white mt-4">{serverError}</p>}
         <div className="mt-4">
-          <Button type="submit">フォーム送信</Button>
+        <LoadingButton
+            type="submit"
+            variant="outline"
+            className="w-32 h-12 text-lg text-white"
+            isLoading={isLoading}
+          >
+            フォーム送信
+          </LoadingButton>
         </div>
       </form>
     </div>
