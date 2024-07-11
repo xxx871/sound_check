@@ -3,19 +3,21 @@
 
 import { User } from '@/types/interface'
 import { useRouter, useSearchParams } from 'next/navigation';
-import React, { useEffect } from 'react'
+import React, { useEffect, useState } from 'react'
 import { updateScore } from '../api/updateScore';
 import { Button } from '@/components/ui/button';
 import {
   TwitterShareButton,
   TwitterIcon,
 } from 'react-share';
+import { LoadingButton } from '@/app/components/elements/LoadingButton';
 
 interface resultContentProps {
   userInfo: User;
 }
 
 const ResultContent: React.FC<resultContentProps> = ({ userInfo }) => {
+  const [isLoading, setIsLoading] = useState<boolean>(false);
   const router = useRouter();
   const searchParams = useSearchParams();
   const modeId = parseInt(searchParams.get('modeId') || '0', 10);
@@ -36,6 +38,7 @@ const ResultContent: React.FC<resultContentProps> = ({ userInfo }) => {
   };
 
   const handlePlayAgain = () => {
+    setIsLoading(true);
     router.push(`/normal?modeId=${modeId}&difficultyId=${difficultyId}&genderId=${genderId}`);
   }
 
@@ -49,12 +52,16 @@ const ResultContent: React.FC<resultContentProps> = ({ userInfo }) => {
           <p>連続で一致した回数: {matchCount}</p>
         </div>
         <div className="mt-16">
-          <Button onClick={handleBackToHome} className="mt-4 p-2 bg-blue-500 text-white">
+          <Button onClick={handleBackToHome} className="bg-blue-500 text-white w-32 h-12">
             トップページへ戻る
           </Button>
-          <Button onClick={handlePlayAgain} className="mt-4 p-2 bg-green-500 text-white">
+          <LoadingButton
+            onClick={handlePlayAgain}
+            className="bg-green-500 text-white w-32 h-12"
+            isLoading={isLoading}
+          >
             もう一度遊ぶ
-          </Button>
+          </LoadingButton>
           <TwitterShareButton
             url={window.location.href}
             title={tweetText}

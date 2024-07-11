@@ -5,6 +5,7 @@ import React, { useEffect, useState } from 'react'
 import DifficultySelect from './DifficultySelect';
 import GenderSelect from './GenderSelect';
 import { Button } from '@/components/ui/button';
+import { LoadingButton } from '@/app/components/elements/LoadingButton';
 
 interface DifficultGenderSelectProps {
   genders: { id: number; name: string }[];
@@ -22,6 +23,7 @@ export const DifficultGenderSelect: React.FC<DifficultGenderSelectProps> = ({
   const [selectedDifficult, setSelectedDifficult] = useState<string>('');
   const [selectedGender, setSelectedGender] = useState<string>('');
   const [showGenderSelect, setShowGenderSelect] = useState<boolean>(true);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
   const router = useRouter();
   const searchParams = useSearchParams();
   const modeId = searchParams.get('modeId');
@@ -39,6 +41,7 @@ export const DifficultGenderSelect: React.FC<DifficultGenderSelectProps> = ({
       alert('性別を選択してください');
       return;
     }
+    setIsLoading(true);
     const path = `/normal?modeId=${modeId}&difficultyId=${selectedDifficult}&genderId=${selectedGender}`;
     router.push(path);
   };
@@ -62,13 +65,14 @@ export const DifficultGenderSelect: React.FC<DifficultGenderSelectProps> = ({
           <GenderSelect genders={genders} onSelect={setSelectedGender} />
         </div>
       )}
-      <Button
+      <LoadingButton
         variant="outline"
         onClick={handleStartClick}
         className="w-32 h-12 text-lg mt-16"
+        isLoading={isLoading}
       >
         START
-      </Button>
+      </LoadingButton>
     </div>
   )
 }

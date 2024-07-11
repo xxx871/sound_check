@@ -3,10 +3,10 @@
 import React from 'react'
 import { useLoginForm } from '../hooks/useLoginForm';
 import { Input } from '@/components/ui/input';
-import { Button } from '@/components/ui/button';
+import { LoadingButton } from '@/app/components/elements/LoadingButton';
 
 const LoginForm = () => {
-  const { form, onSubmit, serverError } = useLoginForm();
+  const { form, onSubmit, serverError, isLoading } = useLoginForm();
   const {
     register,
     handleSubmit,
@@ -39,7 +39,14 @@ const LoginForm = () => {
         </div>
         {serverError && <p className="text-white mt-4">{serverError}</p>}
         <div className="mt-4">
-          <Button type="submit">ログイン</Button>
+          <LoadingButton
+            type="submit"
+            variant="outline"
+            className="w-32 h-12 text-lg text-white"
+            isLoading={isLoading}
+          >
+            ログイン
+          </LoadingButton>
         </div>
       </form>
     </div>

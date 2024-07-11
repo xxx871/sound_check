@@ -1,23 +1,32 @@
 "use client"
 
+import { LoadingButton } from "@/app/components/elements/LoadingButton";
 import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation"
 import { useState } from "react"
 
 function ContactForm() {
   const router = useRouter();
-  const [email, setEmail] = useState("")
-  const [message, setMessage] = useState("")
+  const [email, setEmail] = useState("");
+  const [message, setMessage] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
+    e.preventDefault();
+    setIsLoading(true);
 
-    await fetch("/api/email", {
-      method: "POST",
-      
-      body: JSON.stringify({ email, message }),
-    })
-  }
+    try {
+      await fetch("/api/email", {
+        method: "POST",
+        body: JSON.stringify({ email, message }),
+      });
+      router.push("/");
+    } catch (error) {
+      console.error("Error submitting form:", error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   return (
     <div>
@@ -40,7 +49,14 @@ function ContactForm() {
             required
           ></textarea>
         </div>
-        <Button type="submit" onClick={()=>router.push("/")}>Submit</Button>
+        <LoadingButton
+          type="submit"
+          variant="outline"
+          className="w-32 h-12 text-lg text-white"
+          isLoading={isLoading}
+        >
+          送信
+        </LoadingButton>
       </form>
     </div>
   )

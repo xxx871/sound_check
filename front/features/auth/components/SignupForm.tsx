@@ -4,9 +4,10 @@ import React from 'react'
 import { useSignupForm } from '../hooks/useSignupForm';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
+import { LoadingButton } from '@/app/components/elements/LoadingButton';
 
 const SignupForm = () => {
-  const { form, onSubmit, serverError } = useSignupForm();
+  const { form, onSubmit, serverError, isLoading } = useSignupForm();
   const {
     register,
     handleSubmit,
@@ -60,7 +61,14 @@ const SignupForm = () => {
         </div>
         {serverError && <p className="text-white mt-4">※{serverError}</p>}
         <div className="mt-4">
-          <Button type="submit">新規登録</Button>
+          <LoadingButton
+            type="submit"
+            variant="outline"
+            className="w-32 h-12 text-lg text-white"
+            isLoading={isLoading}
+          >
+            新規登録
+          </LoadingButton>
         </div>
       </form>
     </div>

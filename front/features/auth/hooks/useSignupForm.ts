@@ -9,6 +9,7 @@ import { signUpFormSchema } from "../validation/signUpFormSchema";
 export const useSignupForm = () => {
   const router = useRouter();
   const [serverError, setServerError] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
 
   const form = useForm({
     mode: "onChange",
@@ -22,6 +23,7 @@ export const useSignupForm = () => {
   });
 
   const onSubmit = async (value: z.infer<typeof signUpFormSchema>) => {
+    setIsLoading(true);
     const { name, email, password, password_confirmation } = value;
     try {
       const response = await signUp({
@@ -44,9 +46,11 @@ export const useSignupForm = () => {
         setServerError(errorMessage);
       } else {
         setServerError("登録中にエラーが発生しました。");
-      }
+      } 
+    } finally {
+      setIsLoading(false);
     }
   };
 
-  return { form, onSubmit, serverError };
+  return { form, onSubmit, serverError, isLoading };
 };

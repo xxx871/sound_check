@@ -7,6 +7,7 @@ import { passwordResetFormSchema } from "../validation/passwordResetFormSchema";
 
 export const usePasswordResetForm = () => {
   const [serverError, setServerError] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
 
   const form = useForm({
     mode: "onChange",
@@ -17,6 +18,7 @@ export const usePasswordResetForm = () => {
   });
 
   const onSubmit = async (value: z.infer<typeof passwordResetFormSchema>) => {
+    setIsLoading(true);
     const { email } = value;
     try {
       const response = await passwordReset({
@@ -29,8 +31,10 @@ export const usePasswordResetForm = () => {
       }
     } catch (error: any) {
       setServerError(error.message);
+    } finally {
+      setIsLoading(false);
     }
   };
 
-  return { form, onSubmit, serverError };
+  return { form, onSubmit, serverError, isLoading };
 }
