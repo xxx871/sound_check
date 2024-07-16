@@ -8,9 +8,10 @@ interface VoiceAnalysisProps {
   notes: Note[];
   onResult: (isMatch: boolean) => void;
   onPitchDetected: (pitch: number, note: string) => void;
+  difficulty: string | null;
 }
 
-const VoiceAnalysis:React.FC<VoiceAnalysisProps> = ({ targetNote, notes, onResult, onPitchDetected }) => {
+const VoiceAnalysis:React.FC<VoiceAnalysisProps> = ({ targetNote, notes, onResult, onPitchDetected, difficulty }) => {
   const [isRecording, setIsRecording] = useState<boolean>(false);
   const [analyzing, setAnalyzing] = useState<boolean>(false);
   const [firstDetectedFrequency, setFirstDetectedFrequency] = useState<{ frequency: number, note: string } | null>(null);
@@ -21,12 +22,17 @@ const VoiceAnalysis:React.FC<VoiceAnalysisProps> = ({ targetNote, notes, onResul
   const bufferLength = 2048;
   const threshold = 0.01;
 
-  const findClosestNote = (frequency: number) => {
-    const closest = notes.reduce((acc, note) => {
+  const findClosestNote = (frequency: number, difficulty: string | null): { note: string; frequency: number; diff: number; } | undefined => {
+    let filteredNotes = notes;
+    if (difficulty === '1') {
+      filteredNotes = notes.filter(note => !note.en_note_name.includes('#'));
+    }
+
+    const closest = filteredNotes.reduce((acc, note) => {
       const diff = Math.abs(frequency - note.frequency);
       return diff < acc.diff ? { note: note.en_note_name, frequency: note.frequency, diff } : acc;
     }, { note: '', frequency: 0, diff: Infinity });
-    return closest.note;
+    return closest.note ? closest : undefined;
   };
 
   const startRecording = async () => {
@@ -52,17 +58,17 @@ const VoiceAnalysis:React.FC<VoiceAnalysisProps> = ({ targetNote, notes, onResul
         if (maxAmplitude > threshold) {
           const detectPitch = Pitchfinder.AMDF({ sampleRate: audioContextRef.current!.sampleRate});
           const pitch = detectPitch(inputBuffer);
+          if (pitch === null || pitchesRef.current.length !== 0) return;
+          
+          const closestNote = findClosestNote(pitch, difficulty);
+          const noteInfo = closestNote?.note;
+          if (!noteInfo) return;
 
-          if (pitch !== null) {
-            if (pitchesRef.current.length === 0) {
-              const closestNote = findClosestNote(pitch);
-              setFirstDetectedFrequency({ frequency: pitch, note: closestNote });
-              onPitchDetected(pitch, closestNote);
-              const isMatch = closestNote === targetNote;
-              onResult(isMatch);
-            }
-            pitchesRef.current.push(pitch);
-          }
+          setFirstDetectedFrequency({ frequency: pitch, note: noteInfo });
+          onPitchDetected(pitch, noteInfo);
+          const isMatch = noteInfo === targetNote;
+          onResult(isMatch)
+          pitchesRef.current.push(pitch);
         }
       }
     };

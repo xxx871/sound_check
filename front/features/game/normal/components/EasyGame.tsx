@@ -1,12 +1,12 @@
-import { Note, GameUser } from '@/types/interface';
+import { GameUser, Note } from '@/types/interface';
+import { useSearchParams } from 'next/navigation';
 import React, { useEffect, useState } from 'react'
-import * as Tone from "tone";
 import { getUserNotesRange } from '../../api/getUserNotesRange';
 import { getGenderNotesRange } from '../../api/getGenderNotesRange';
-import { useSearchParams } from 'next/navigation';
+import * as Tone from "tone";
 import { Button } from '@/components/ui/button';
 
-interface EasyGameProps {
+interface MediumGameProps {
   onPlayNote: (note: string) => void;
   userInfo: GameUser;
 }
@@ -16,9 +16,13 @@ const getRandomNote = (notes: Note[]): Note => {
   return notes[randomIndex];
 };
 
-const EasyGame: React.FC<EasyGameProps> = ({ userInfo, onPlayNote }) => {
+const isSharpNote = (noteName: string): boolean => {
+  return noteName.includes('#');
+};
+
+const MediumGame: React.FC<MediumGameProps> = ({ userInfo, onPlayNote }) => {
   const [note, setNote] = useState<Note | null>(null);
-  const [noteInfo, setNoteInfo] = useState<{ en_note_name: string; ja_note_name: string; frequency: number } | null>(null);
+  const [noteInfo, setNoteInfo] = useState<{ en_note_name: string; ja_note_name: string; frequency: number } | null>(null)
   const searchParams = useSearchParams();
 
   useEffect(() => {
@@ -26,7 +30,7 @@ const EasyGame: React.FC<EasyGameProps> = ({ userInfo, onPlayNote }) => {
       try {
         let notes: Note[] = [];
 
-        if (userInfo) {
+        if(userInfo) {
           const { user_high_note, user_low_note, gender, gender_id } = userInfo;
           if (user_high_note && user_low_note) {
             notes = await getUserNotesRange(user_high_note.en_note_name, user_low_note.en_note_name)
@@ -41,6 +45,9 @@ const EasyGame: React.FC<EasyGameProps> = ({ userInfo, onPlayNote }) => {
             notes = await getGenderNotesRange(genderId);
           }
         }
+  
+        notes = notes.filter(note => !isSharpNote(note.en_note_name));
+  
         if (notes.length === 0) {
           console.error("No notes available after filtering");
           return;
@@ -66,8 +73,9 @@ const EasyGame: React.FC<EasyGameProps> = ({ userInfo, onPlayNote }) => {
     onPlayNote(note.en_note_name);
   };
 
+
   return (
-    <main className="text-white">
+    <main>
       <div className="mt-16 w-72 mx-auto text-2xl text-slate-300 text-center">
         <Button variant="outline" onClick={playNote}>音を再生</Button>
         {noteInfo && (
@@ -82,4 +90,4 @@ const EasyGame: React.FC<EasyGameProps> = ({ userInfo, onPlayNote }) => {
   )
 }
 
-export default EasyGame
+export default MediumGame
