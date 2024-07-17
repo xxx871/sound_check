@@ -60,7 +60,12 @@ const GameContainer: React.FC<GameContainerProps> = ({ userInfo, notes }) => {
       case 2:
         return <MediumGame userInfo={userInfo} onPlayNote={handlePlayNote}/>
       case 3:
-        return <HardGame userInfo={userInfo} onPlayNote={handlePlayNote}/>
+        return <HardGame
+          userInfo={userInfo}
+          notes={notes}
+          onResult={handleAnalysisResult}
+          onPitchDetected={handlePitchDetected}
+        />
       default:
         return <p>Invalid difficulty level</p>
     }
@@ -70,7 +75,6 @@ const GameContainer: React.FC<GameContainerProps> = ({ userInfo, notes }) => {
     <div className="text-white">
       <div>
         {renderGameComponent()}
-        <h2 className="text-white text-center mt-10">音が流れた後、ボタンを押して音声を入力</h2>
         {targetNote && (
           <VoiceAnalysis
             targetNote={targetNote}

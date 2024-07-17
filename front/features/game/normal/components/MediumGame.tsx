@@ -27,7 +27,7 @@ const EasyGame: React.FC<EasyGameProps> = ({ userInfo, onPlayNote }) => {
         let notes: Note[] = [];
 
         if (userInfo) {
-          const { user_high_note, user_low_note, gender, gender_id } = userInfo;
+          const { user_high_note, user_low_note, gender_id } = userInfo;
           if (user_high_note && user_low_note) {
             notes = await getUserNotesRange(user_high_note.en_note_name, user_low_note.en_note_name)
           } else if (gender_id !== undefined) {
@@ -77,6 +77,7 @@ const EasyGame: React.FC<EasyGameProps> = ({ userInfo, onPlayNote }) => {
             <p>{`日本語の音名: ${noteInfo.ja_note_name}`}</p>
           </div>
         )}
+        <h2 className="text-white text-center mt-10">音が流れた後、ボタンを押して音声を入力</h2>
       </div>
     </main>
   )
