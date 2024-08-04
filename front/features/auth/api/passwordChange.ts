@@ -9,21 +9,21 @@ interface PasswordChangeData {
 
 export const passwordChange = async (data: PasswordChangeData) => {
   const queryParams = new URLSearchParams(window.location.search);
-  const uid = queryParams.get('uid');
-  const token = queryParams.get('access-token');
-  const client = queryParams.get('client');
+  // const uid = queryParams.get('uid');
+  // const token = queryParams.get('access-token');
+  // const client = queryParams.get('client');
 
   try {
     const response = await axiosInstance.put("/auth/password", {
       password: data.password,
       password_confirmation: data.password_confirmation,
       reset_password_token: data.reset_password_token,
-    }, {
-      headers: {
-        'uid': uid,
-        'client': client,
-        'access-token': token,
-      }
+    // }, {
+    //   headers: {
+    //     'uid': uid,
+    //     'client': client,
+    //     'access-token': token,
+    //   }
     });
     if (response.status !== 200) throw new Error();
     if (response.data.success) {

@@ -31,3 +31,5 @@
 .env
 .env.local
 .env.production
+
+coverage/
