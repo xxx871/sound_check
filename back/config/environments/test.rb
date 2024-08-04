@@ -57,4 +57,11 @@ Rails.application.configure do
 
   # Annotate rendered view with file names.
   # config.action_view.annotate_rendered_view_with_filenames = true
+  config.middleware.use Warden::Manager
+
+  config.to_prepare do
+    Devise.setup do |config|
+      config.allow_unconfirmed_access_for = 2.days
+    end
+  end
 end

@@ -24,7 +24,7 @@ module Api
           return
         end
 
-        notes = Note.where("frequency >= ? AND frequency <= ?", low_note.frequency, high_note.frequency)
+        notes = Note.where(frequency: low_note.frequency..high_note.frequency)
         render json: notes
       end
     end

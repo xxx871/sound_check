@@ -16,13 +16,13 @@ Rails.application.routes.draw do
       resources :genders, only: [:index] do
         get 'notes/range/:id', on: :collection, action: :notes_range
       end
-      resources :modes, only: [:index]
+      resources :modes, only: [:index, :show]
       resources :notes, only: [:index, :show] do
         collection do
           get 'range'
         end
       end
-      put 'scores/update', to: 'scores#update'
+      patch 'scores', to: 'scores#update'
       get 'scores/ranking', to: 'scores#ranking'
     end
   end
