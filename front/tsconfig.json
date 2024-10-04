@@ -17,10 +17,13 @@
         "name": "next"
       }
     ],
+    "baseUrl": ".",
     "paths": {
-      "@/*": ["./*"]
+      "@/*": ["./*"],
+      "features/*": ["features/*"]
     }
   },
-  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", "**/**/*.tsx", ".next/types/**/*.ts"],
+  "types": ["vitest/globals"],
+  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", "**/**/*.tsx", ".next/types/**/*.ts", "vitest-setup.ts"],
   "exclude": ["node_modules"]
 }

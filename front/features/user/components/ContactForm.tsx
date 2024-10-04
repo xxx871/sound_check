@@ -1,7 +1,6 @@
 "use client"
 
 import { LoadingButton } from "@/app/components/elements/LoadingButton";
-import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation"
 import { useState } from "react"
 
@@ -30,7 +29,6 @@ function ContactForm() {
 
   return (
     <div>
-      <h2>Contact Us</h2>
       <form onSubmit={handleSubmit} className="space-y-10">
         <div>
           <label className="text-white">Email:</label>
